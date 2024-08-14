@@ -60,12 +60,12 @@ if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
     maindir="`dirname "${BASH_SOURCE[0]}"`"
 fi
 
-ssharg=
-sshenvarg=
-if test -n "$SSH_AUTH_SOCK" -a "`uname`" = Darwin; then
-    ssharg=" --mount type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock"
-    sshenvarg=" -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
-fi
+# ssharg=
+# sshenvarg=
+# if test -n "$SSH_AUTH_SOCK" -a "`uname`" = Darwin; then
+#     ssharg=" --mount type=bind,src=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock"
+#     sshenvarg=" -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+# fi
 
 if test -n "$maindir" -a -z "$fresh"; then
     existing_image="`docker ps -f status=running -f ancestor=$tag -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
@@ -80,21 +80,21 @@ if test -n "$maindir" -a -z "$fresh"; then
     fi
 fi
 
-netarg=
-if test `uname` = Darwin; then
-    if ! netstat -n -a -p tcp | grep '\.6169[  ].*LISTEN' >/dev/null; then
-        netarg="$netarg "'--expose=6169/tcp -p 6169:6169/tcp'
-    fi
-    if ! netstat -n -a -p tcp | grep '\.12949[ 	].*LISTEN' >/dev/null; then
-        netarg="$netarg "'--expose=12949/tcp -p 12949:12949/tcp'
-    fi
-elif test -x /bin/netstat; then
-    if ! netstat -n -a -p tcp | grep '\.6169[  ].*LISTEN' >/dev/null; then
-        netarg="$netarg "'--expose=6169/tcp -p 6169:6169/tcp'
-    fi
-    if ! netstat -n -l -t | grep ':12949[ 	]' >/dev/null; then
-        netarg="$netarg "'--expose=12949/tcp -p 12949:12949/tcp'
-    fi
-fi
+# netarg=
+# if test `uname` = Darwin; then
+#     if ! netstat -n -a -p tcp | grep '\.6169[  ].*LISTEN' >/dev/null; then
+#         netarg="$netarg "'--expose=6169/tcp -p 6169:6169/tcp'
+#     fi
+#     if ! netstat -n -a -p tcp | grep '\.12949[ 	].*LISTEN' >/dev/null; then
+#         netarg="$netarg "'--expose=12949/tcp -p 12949:12949/tcp'
+#     fi
+# elif test -x /bin/netstat; then
+#     if ! netstat -n -a -p tcp | grep '\.6169[  ].*LISTEN' >/dev/null; then
+#         netarg="$netarg "'--expose=6169/tcp -p 6169:6169/tcp'
+#     fi
+#     if ! netstat -n -l -t | grep ':12949[ 	]' >/dev/null; then
+#         netarg="$netarg "'--expose=12949/tcp -p 12949:12949/tcp'
+#     fi
+# fi
 
 vexec docker run -it --name cs33-container --platform $platform --rm --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir/home":/home/cs33-user -w "/home/cs33-user" $netarg$sshenvarg $tag
