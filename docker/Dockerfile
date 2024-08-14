@@ -19,10 +19,6 @@ RUN apt-get -y install\
  gdb\
  gdb-doc\
  glibc-doc\
- libblas-dev\
- liblapack-dev\
- liblapack-doc\
- libstdc++-10-doc\
  make\
  make-doc
 
@@ -33,23 +29,12 @@ RUN apt-get -y install\
  lldb\
  clang-format
 
-# install programs used for system exploration
-RUN apt-get -y install\
- blktrace\
- linux-tools-generic\
- strace\
- tcpdump
-
 # install interactive programs (emacs, vim, nano, man, sudo, etc.)
 RUN apt-get -y install\
- bc\
  curl\
- dc\
  git\
  git-doc\
  man\
- micro\
- nano\
  psmisc\
  sudo\
  wget
@@ -57,20 +42,7 @@ RUN apt-get -y install\
 # set up libraries
 RUN apt-get -y install\
  libreadline-dev\
- locales\
- wamerican\
- libssl-dev
-
-# install programs used for networking
-RUN apt-get -y install\
- dnsutils\
- inetutils-ping\
- iproute2\
- net-tools\
- netcat\
- telnet\
- time\
- traceroute
+ locales
 
 # install dependencies for shell tests
 RUN apt -y install python3-pip
@@ -81,7 +53,7 @@ RUN apt -y install figlet\
 
 # set up default locale
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 # remove unneeded .deb files
 RUN rm -r /var/lib/apt/lists/*

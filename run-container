@@ -27,7 +27,7 @@ while test "$#" -ne 0; do
         verbose=true
         shift
     else
-        echo "Usage: cs61-run-docker [-f|--fresh][-V|--verbose]" 1>&2
+        echo "Usage: run-container [-f|--fresh][-V|--verbose]" 1>&2
         exit 1
     fi
 done
@@ -53,13 +53,11 @@ while test "$dir" != / -a "$dir" != ""; do
         maindir="$dir"
         break
     fi
-    subdir="/`basename "$dir"`$subdir"
     dir="`dirname "$dir"`"
 done
 
 if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
     maindir="`dirname "${BASH_SOURCE[0]}"`"
-    subdir=""
 fi
 
 ssharg=
@@ -99,4 +97,4 @@ elif test -x /bin/netstat; then
     fi
 fi
 
-vexec docker run -it --platform $platform --rm --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir":/cs33-user -w "/cs33-user" $netarg$sshenvarg $tag
+vexec docker run -it --name cs33-container --platform $platform --rm --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir/home":/home/cs33-user -w "/home/cs33-user" $netarg$sshenvarg $tag
