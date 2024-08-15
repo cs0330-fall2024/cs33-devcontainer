@@ -50,10 +50,10 @@ RUN apt-get -y install\
  libssl-dev
 
  # install dependencies for shell tests
-RUN apt -y install python3-pip
+RUN apt-get -y install python3-pip
 RUN yes | pip install termcolor
 
-RUN apt -y install figlet\
+RUN apt-get -y install figlet\
   sysvbanner
 
 # install GCC-related packages for amd64
