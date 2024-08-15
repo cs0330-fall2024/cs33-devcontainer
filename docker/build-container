@@ -17,6 +17,8 @@ elif test -z "$tag"; then
     tag=cs33:latest
 fi
 
+docker images | grep "cs33" | awk '{print $1":"$2}' | xargs docker rmi
+
 if test $platform = linux/arm64; then
     exec docker build -t "$tag" -f Dockerfile.arm64 --platform linux/arm64 .
 else
