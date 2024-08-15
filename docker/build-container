@@ -2,25 +2,23 @@
 
 cd `dirname $0`
 
-arch=$(uname -m)
+arch=`uname -m`
 tag=
 platform=
 
-if test -z "$platform" -a \( "$arch" = "arm64" -o "$arch" = "aarch64" \); then
+if test "$arch" = "arm64" -o "$arch" = "aarch64"; then
     platform=linux/arm64
-elif test -z "$platform"; then
-    platform=linux/amd64
-fi
-if test -z "$tag" -a "$platform" = linux/arm64; then
     tag=cs33:arm64
-elif test -z "$tag"; then
+else
+    platform=linux/amd64
     tag=cs33:latest
 fi
 
-docker images | grep "cs33" | awk '{print $1":"$2}' | xargs docker rmi
+docker images | grep "cs33" | awk '{print $1":"$2}' | xargs -r docker rmi
 
-if test $platform = linux/arm64; then
-    exec docker build -t "$tag" -f Dockerfile.arm64 --platform linux/arm64 .
-else
-    exec docker build -t "$tag" -f Dockerfile --platform linux/amd64 .
+dockerfile=Dockerfile
+if test "$platform" = "linux/arm64"; then
+    dockerfile=Dockerfile.arm64
 fi
+
+exec docker build -t "$tag" -f "$dockerfile" --platform "$platform" .

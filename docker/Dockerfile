@@ -12,7 +12,6 @@ RUN apt-get update &&\
 # install GCC-related packages
 RUN apt-get -y install\
  binutils-doc\
- cpp-doc\
  gcc-doc\
  g++\
  g++-multilib\
@@ -31,18 +30,16 @@ RUN apt-get -y install\
 
 # install interactive programs (emacs, vim, nano, man, sudo, etc.)
 RUN apt-get -y install\
- curl\
  git\
  git-doc\
  man\
- psmisc\
- sudo\
- wget
+ sudo
 
 # set up libraries
 RUN apt-get -y install\
  libreadline-dev\
- locales
+ locales\
+ libssl-dev
 
 # install dependencies for shell tests
 RUN apt -y install python3-pip
