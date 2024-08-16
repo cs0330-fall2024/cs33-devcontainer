@@ -3,7 +3,8 @@
 maindir=""
 
 fresh=
-verbose=false
+persistent=
+persistent_name=cs33-persistent
 arch=`uname -m`
 tag=
 platform=
@@ -20,21 +21,14 @@ while test "$#" -ne 0; do
     if test "$1" = "-f" -o "$1" = "--fresh"; then
         fresh=1
         shift
-    elif test "$1" = "-V" -o "$1" = "--verbose"; then
-        verbose=true
+    elif test "$1" = "-p" -o "$1" = "--persistent"; then
+        persistent=1
         shift
     else
-        echo "Usage: run-container [-f|--fresh][-V|--verbose]" 1>&2
+        echo "Usage: run-container [-f|--fresh][-p|--persistent]" 1>&2
         exit 1
     fi
 done
-
-vexec () {
-    if $verbose; then
-        echo "$@"
-    fi
-    exec "$@"
-}
 
 if stat --format %i / >/dev/null 2>&1; then
     statformatarg="--format"
@@ -53,9 +47,9 @@ while test "$dir" != / -a "$dir" != ""; do
     dir="`dirname "$dir"`"
 done
 
-if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
-    maindir="`dirname "${BASH_SOURCE[0]}"`"
-fi
+# if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
+#     maindir="`dirname "${BASH_SOURCE[0]}"`"
+# fi
 
 ssharg=
 sshenvarg=
@@ -64,7 +58,19 @@ if test -n "$SSH_AUTH_SOCK" -a "`uname`" = Darwin; then
     sshenvarg=" -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
 fi
 
-if test -n "$maindir" -a -z "$fresh"; then
+if test -z "$fresh"; then
+    if test -n "$persistent"; then
+        existing_image="`docker ps -f status=exited -f name=$persistent_name -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+        if test -n "$existing_image"; then
+            created_at="`echo $existing_image | sed 's/,.*//'`"
+            image="`echo $existing_image | sed 's/^.*,//'`"
+            image12="`echo $image | head -c 12`"
+            echo "* Using existing container $image12, created $created_at" 1>&2
+            echo "- To create a new container, exit then \`run-container -p -f\`" 1>&2
+            echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
+            exec docker start -ai $image
+        fi
+    fi
     existing_image="`docker ps -f status=running -f ancestor=$tag -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
     if test -n "$existing_image"; then
         created_at="`echo $existing_image | sed 's/,.*//'`"
@@ -73,8 +79,22 @@ if test -n "$maindir" -a -z "$fresh"; then
         echo "* Using running container $image12, created $created_at" 1>&2
         echo "- To start a new container, exit then \`run-container -f\`" 1>&2
         echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
-        vexec docker exec -it$sshenvarg $image /bin/bash
+        exec docker exec -it$sshenvarg $image /bin/bash
     fi
+    
 fi
 
-vexec docker run -it --platform $platform --rm --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir/home":/home/cs33-user $ssharg -w "/home/cs33-user" $sshenvarg $tag
+if test -n "$persistent"; then
+    existing_image="`docker ps -f status=exited -f name=$persistent_name -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+    if test -n "$existing_image"; then
+        created_at="`echo $existing_image | sed 's/,.*//'`"
+        image="`echo $existing_image | sed 's/^.*,//'`"
+        image12="`echo $image | head -c 12`"
+        echo "* Removing existing container $image12, created $created_at" 1>&2
+        echo "- Starting new persistent container" 1>&2
+        `docker rm $image` 2>/dev/null
+    fi
+    exec docker run -it --platform $platform --name $persistent_name --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir/home":/home/cs33-user $ssharg -w "/home/cs33-user" $sshenvarg $tag
+fi
+
+exec docker run -it --platform $platform --rm --privileged --cap-add=SYS_PTRACE --cap-add=NET_ADMIN --security-opt seccomp=unconfined -v "$maindir/home":/home/cs33-user $ssharg -w "/home/cs33-user" $sshenvarg $tag
