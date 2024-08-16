@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 # set environment variables for tzdata
 ARG TZ=America/New_York
@@ -18,62 +18,37 @@ RUN apt-get -y install binfmt-support &&\
   apt-get update &&\
   apt-get upgrade -y
 
-# install GCC-related packages
-RUN apt-get -y install\
- binutils-doc\
- gcc-doc\
- g++\
- gdb\
- gdb-doc\
- glibc-doc\
- make\
- make-doc
-
-# install clang-related packages
-RUN apt-get -y install\
- clang\
- clang-10-doc\
- lldb\
- clang-format
-
 # install interactive programs (emacs, vim, nano, man, sudo, etc.)
 RUN apt-get -y install\
  git\
- git-doc\
  man\
- sudo
-
-# set up libraries
-RUN apt-get -y install\
- libreadline-dev\
+ sudo\
  locales\
- libssl-dev
+ clang-format\
+ gdb\
+ make
 
- # install dependencies for shell tests
-RUN apt-get -y install python3-pip
+# install dependencies for shell tests
+RUN apt-get -y install\
+ python3-pip\
+ figlet\
+ sysvbanner
 RUN yes | pip install termcolor
-
-RUN apt-get -y install figlet\
-  sysvbanner
 
 # install GCC-related packages for amd64
 RUN apt-get -y install\
- g++-9-x86-64-linux-gnu\
+ gcc-11-x86-64-linux-gnu\
  gdb-multiarch\
  libc6:amd64\
- libasan5:amd64\
+ libasan6:amd64\
  libtsan0:amd64\
- libubsan1:amd64\
- libreadline-dev:amd64
+ libubsan1:amd64
 
 # link x86-64 versions of common tools into /usr/x86_64-linux-gnu/bin
-RUN for i in addr2line c++filt cpp-9 g++-9 gcc-9 gcov-9 gcov-dump-9 gcov-tool-9 size strings; do \
+RUN for i in addr2line gcc-11 size strings; do \
         ln -s /usr/bin/x86_64-linux-gnu-$i /usr/x86_64-linux-gnu/bin/$i; done && \
-  ln -s /usr/bin/x86_64-linux-gnu-cpp-9 /usr/x86_64-linux-gnu/bin/cpp && \
-  ln -s /usr/bin/x86_64-linux-gnu-g++-9 /usr/x86_64-linux-gnu/bin/c++ && \
-  ln -s /usr/bin/x86_64-linux-gnu-g++-9 /usr/x86_64-linux-gnu/bin/g++ && \
-  ln -s /usr/bin/x86_64-linux-gnu-gcc-9 /usr/x86_64-linux-gnu/bin/gcc && \
-  ln -s /usr/bin/x86_64-linux-gnu-gcc-9 /usr/x86_64-linux-gnu/bin/cc && \
+  ln -s /usr/bin/x86_64-linux-gnu-gcc-11 /usr/x86_64-linux-gnu/bin/gcc && \
+  ln -s /usr/bin/x86_64-linux-gnu-gcc-11 /usr/x86_64-linux-gnu/bin/cc && \
   ln -s /usr/bin/gdb-multiarch /usr/x86_64-linux-gnu/bin/gdb
 
 # set up default locale

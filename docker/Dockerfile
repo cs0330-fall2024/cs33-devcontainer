@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 # set environment variables for tzdata
 ARG TZ=America/New_York
@@ -9,44 +9,22 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &&\
   yes | unminimize
 
-# install GCC-related packages
-RUN apt-get -y install\
- binutils-doc\
- gcc-doc\
- g++\
- g++-multilib\
- gdb\
- gdb-doc\
- glibc-doc\
- make\
- make-doc
-
-# install clang-related packages
-RUN apt-get -y install\
- clang\
- clang-10-doc\
- lldb\
- clang-format
-
 # install interactive programs (emacs, vim, nano, man, sudo, etc.)
 RUN apt-get -y install\
  git\
- git-doc\
  man\
- sudo
-
-# set up libraries
-RUN apt-get -y install\
- libreadline-dev\
+ sudo\
  locales\
- libssl-dev
+ clang-format\
+ gdb\
+ make
 
 # install dependencies for shell tests
-RUN apt-get -y install python3-pip
+RUN apt-get -y install\
+ python3-pip\
+ figlet\
+ sysvbanner
 RUN yes | pip install termcolor
-
-RUN apt-get -y install figlet\
-  sysvbanner
 
 # set up default locale
 RUN locale-gen en_US.UTF-8
