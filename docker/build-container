@@ -13,7 +13,7 @@ else
     platform=linux/amd64
     tag=cs33:latest
 fi
-
+docker ps -a -q --filter "name=cs33-persistent" | xargs -r docker rm
 docker images | grep "cs33" | awk '{print $1":"$2}' | xargs -r docker rmi
 
 dockerfile=Dockerfile

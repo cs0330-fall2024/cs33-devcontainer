@@ -17,7 +17,8 @@ RUN apt-get -y install\
  locales\
  clang-format\
  gdb\
- make
+ make\
+ psmisc
 
 # install dependencies for shell tests
 RUN apt-get -y install\
