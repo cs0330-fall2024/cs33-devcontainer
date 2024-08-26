@@ -47,9 +47,9 @@ while test "$dir" != / -a "$dir" != ""; do
     dir="`dirname "$dir"`"
 done
 
-# if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
-#     maindir="`dirname "${BASH_SOURCE[0]}"`"
-# fi
+if test -z "$maindir" && expr "${BASH_SOURCE[0]}" : / >/dev/null 2>&1; then
+    maindir="`dirname "${BASH_SOURCE[0]}"`"
+fi
 
 ssharg=
 sshenvarg=
@@ -60,7 +60,7 @@ fi
 
 if test -z "$fresh"; then
     if test -n "$persistent"; then
-        existing_image="`docker ps -f status=exited -f name=$persistent_name -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+        existing_image="`docker ps -f status=exited -f name=$persistent_name --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
         if test -n "$existing_image"; then
             created_at="`echo $existing_image | sed 's/,.*//'`"
             image="`echo $existing_image | sed 's/^.*,//'`"
@@ -71,7 +71,7 @@ if test -z "$fresh"; then
             exec docker start -ai $image
         fi
     fi
-    existing_image="`docker ps -f status=running -f ancestor=$tag -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+    existing_image="`docker ps -f status=running -f ancestor=$tag --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
     if test -n "$existing_image"; then
         created_at="`echo $existing_image | sed 's/,.*//'`"
         image="`echo $existing_image | sed 's/^.*,//'`"
@@ -85,7 +85,7 @@ if test -z "$fresh"; then
 fi
 
 if test -n "$persistent"; then
-    existing_image="`docker ps -f status=exited -f name=$persistent_name -f volume=/host_mnt"$maindir/home" --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+    existing_image="`docker ps -f status=exited -f name=$persistent_name --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
     if test -n "$existing_image"; then
         created_at="`echo $existing_image | sed 's/,.*//'`"
         image="`echo $existing_image | sed 's/^.*,//'`"
