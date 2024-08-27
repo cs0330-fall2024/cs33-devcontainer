@@ -30,6 +30,10 @@ RUN apt-get -y install\
  sysvbanner
 RUN yes | pip install termcolor
 
+# put reformat script in usr/bin
+RUN echo "#!/bin/bash\n\nclang-format -i -style='{ "BasedOnStyle": "google", "IndentWidth": 4, "DerivePointerAlignment": false, "PointerAlignment": "Right" }' *.c *.h" > /usr/bin/cs33_reformat && \
+ sudo chmod +x /usr/bin/cs33_reformat
+
 # set up default locale
 RUN locale-gen en_US.UTF-8
 ENV LANG=en_US.UTF-8
@@ -41,8 +45,8 @@ RUN rm -r /var/lib/apt/lists/*
 RUN useradd -m -s /bin/bash cs33-user && \
   echo "cs33-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/cs33-init
 
-# create binary reporting version of dockerfile
-RUN (echo '#\!/bin/sh'; echo 'echo 1') > /usr/bin/cs33-docker-version; chmod ugo+rx,u+w,go-w /usr/bin/cs33-docker-version
+# # create binary reporting version of dockerfile
+# RUN (echo '#\!/bin/sh'; echo 'echo 1') > /usr/bin/cs33-docker-version; chmod ugo+rx,u+w,go-w /usr/bin/cs33-docker-version
 
 # configure your environment
 USER cs33-user
