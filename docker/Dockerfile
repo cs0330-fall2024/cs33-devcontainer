@@ -18,7 +18,10 @@ RUN apt-get -y install\
  clang-format\
  gdb\
  make\
- psmisc
+ psmisc\
+ nano\
+ vim\
+ dos2unix
 
 # install dependencies for shell tests
 RUN apt-get -y install\

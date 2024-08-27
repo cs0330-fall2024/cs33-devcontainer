@@ -28,6 +28,8 @@ RUN apt-get -y install\
  gdb\
  make\
  psmisc\
+ nano\
+ vim\
  qemu-user
 
 # install dependencies for shell tests
@@ -51,8 +53,8 @@ RUN for i in addr2line gcc-11 size strings; do \
         ln -s /usr/bin/x86_64-linux-gnu-$i /usr/x86_64-linux-gnu/bin/$i; done && \
   ln -s /usr/bin/x86_64-linux-gnu-gcc-11 /usr/x86_64-linux-gnu/bin/gcc && \
   ln -s /usr/bin/x86_64-linux-gnu-gcc-11 /usr/x86_64-linux-gnu/bin/cc && \
-  ln -s /usr/bin/gdb-multiarch /usr/x86_64-linux-gnu/bin/gdb
-#   ln -sf /usr/bin/x86_64-linux-gnu-objdump /usr/bin/objdump
+  ln -s /usr/bin/gdb-multiarch /usr/x86_64-linux-gnu/bin/gdb && \
+  ln -sf /usr/bin/x86_64-linux-gnu-objdump /usr/bin/objdump
 
 # set up default locale
 RUN locale-gen en_US.UTF-8
