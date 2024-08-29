@@ -21,7 +21,8 @@ RUN apt-get -y install\
  psmisc\
  nano\
  vim\
- dos2unix
+ dos2unix\
+ valgrind
 
 # install dependencies for shell tests
 RUN apt-get -y install\
@@ -32,7 +33,7 @@ RUN yes | pip install termcolor
 
 # put reformat script in usr/bin
 RUN echo "#!/bin/bash\n\nclang-format -i -style='{ "BasedOnStyle": "google", "IndentWidth": 4, "DerivePointerAlignment": false, "PointerAlignment": "Right" }' *.c *.h" > /usr/bin/cs33_reformat && \
- sudo chmod +x /usr/bin/cs33_reformat
+ chmod +rx /usr/bin/cs33_reformat
 
 # set up default locale
 RUN locale-gen en_US.UTF-8
