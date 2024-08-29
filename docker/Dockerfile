@@ -46,9 +46,6 @@ RUN rm -r /var/lib/apt/lists/*
 RUN useradd -m -s /bin/bash cs33-user && \
   echo "cs33-user ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/cs33-init
 
-# # create binary reporting version of dockerfile
-# RUN (echo '#\!/bin/sh'; echo 'echo 1') > /usr/bin/cs33-docker-version; chmod ugo+rx,u+w,go-w /usr/bin/cs33-docker-version
-
 # configure your environment
 USER cs33-user
 RUN rm -f ~/.bash_logout

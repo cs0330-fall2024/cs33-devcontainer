@@ -76,10 +76,12 @@ if test -z "$fresh"; then
         created_at="`echo $existing_image | sed 's/,.*//'`"
         image="`echo $existing_image | sed 's/^.*,//'`"
         image12="`echo $image | head -c 12`"
-        echo "* Using running container $image12, created $created_at" 1>&2
-        echo "- To start a new container, exit then \`run-container -f\`" 1>&2
-        echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
-        exec docker exec -it$sshenvarg $image /bin/bash
+        if test "docker inspect --format '{{.Name}}' $image12" = "$persistent_name"; then
+            echo "* Using running container $image12, created $created_at" 1>&2
+            echo "- To start a new container, exit then \`run-container -f\`" 1>&2
+            echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
+            exec docker exec -it$sshenvarg $image /bin/bash
+        fi
     fi
     
 fi
