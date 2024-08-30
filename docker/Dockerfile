@@ -23,7 +23,8 @@ RUN apt-get -y install\
  vim\
  dos2unix\
  valgrind\
- graphviz
+ graphviz\
+ gcc-multilib
 
 # install dependencies for shell tests
 RUN apt-get -y install\

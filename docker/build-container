@@ -3,18 +3,31 @@
 cd `dirname $0`
 
 arch=`uname -m`
+persistent_name=cs33-persistent
 tag=
 platform=
+amd64=
 
-if test "$arch" = "arm64" -o "$arch" = "aarch64"; then
+while test "$#" -ne 0; do
+    if test "$1" = "--amd64"; then
+        amd64=1
+        shift
+    else
+        echo "Usage: build-container [--amd64]" 1>&2
+        exit 1
+    fi
+done
+
+if test -z "$amd64" -a \( "$arch" = "arm64" -o "$arch" = "aarch64" \); then
     platform=linux/arm64
     tag=cs33:arm64
 else
     platform=linux/amd64
     tag=cs33:latest
 fi
-docker ps -a -q --filter "name=cs33-persistent" | xargs -r docker rm
-docker images | grep "cs33" | awk '{print $1":"$2}' | xargs -r docker rmi
+
+docker ps -a --filter "name=$persistent_name" | grep "$tag" | awk '{print $1}' | xargs -r docker rm
+docker images | grep "$tag" | awk '{print $1":"$2}' | xargs -r docker rmi
 
 dockerfile=Dockerfile
 if test "$platform" = "linux/arm64"; then

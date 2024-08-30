@@ -8,14 +8,7 @@ persistent_name=cs33-persistent
 arch=`uname -m`
 tag=
 platform=
-
-if test "$arch" = "arm64" -o "$arch" = "aarch64"; then
-    platform=linux/arm64
-    tag=cs33:arm64
-else
-    platform=linux/amd64
-    tag=cs33:latest
-fi
+amd64=
 
 while test "$#" -ne 0; do
     if test "$1" = "-f" -o "$1" = "--fresh"; then
@@ -24,11 +17,23 @@ while test "$#" -ne 0; do
     elif test "$1" = "-p" -o "$1" = "--persistent"; then
         persistent=1
         shift
+    elif test "$1" = "--amd64"; then
+        amd64=1
+        shift
     else
-        echo "Usage: run-container [-f|--fresh][-p|--persistent]" 1>&2
+        echo "Usage: run-container [-f|--fresh][-p|--persistent][--amd64]" 1>&2
         exit 1
     fi
 done
+
+if test -z "$amd64" -a \( "$arch" = "arm64" -o "$arch" = "aarch64" \); then
+    platform=linux/arm64
+    tag=cs33:arm64
+else
+    platform=linux/amd64
+    tag=cs33:latest
+fi
+
 
 if stat --format %i / >/dev/null 2>&1; then
     statformatarg="--format"
