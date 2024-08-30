@@ -65,21 +65,27 @@ if test -z "$fresh"; then
             created_at="`echo $existing_image | sed 's/,.*//'`"
             image="`echo $existing_image | sed 's/^.*,//'`"
             image12="`echo $image | head -c 12`"
-            echo "* Using existing container $image12, created $created_at" 1>&2
+            echo "* Using existing persistent container $image12, created $created_at" 1>&2
             echo "- To create a new container, exit then \`run-container -p -f\`" 1>&2
-            echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
+            exec docker start -ai $image
+        fi
+        existing_image="`docker ps -f status=running -f name=$persistent_name --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
+        if test -n "$existing_image"; then
+            created_at="`echo $existing_image | sed 's/,.*//'`"
+            image="`echo $existing_image | sed 's/^.*,//'`"
+            image12="`echo $image | head -c 12`"
+            echo "* Using running persistent container $image12, created $created_at" 1>&2
             exec docker start -ai $image
         fi
     fi
     existing_image="`docker ps -f status=running -f ancestor=$tag --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
-    if test -n "$existing_image"; then
+    if test -n "$existing_image" -a -z "$persistent"; then
         created_at="`echo $existing_image | sed 's/,.*//'`"
         image="`echo $existing_image | sed 's/^.*,//'`"
         image12="`echo $image | head -c 12`"
-        if test "docker inspect --format '{{.Name}}' $image12" = "$persistent_name"; then
+        if test "docker inspect --format '{{.Name}}' $image12" != "$persistent_name"; then
             echo "* Using running container $image12, created $created_at" 1>&2
             echo "- To start a new container, exit then \`run-container -f\`" 1>&2
-            echo "- To kill this container, exit then \`docker kill $image12\`" 1>&2
             exec docker exec -it$sshenvarg $image /bin/bash
         fi
     fi
