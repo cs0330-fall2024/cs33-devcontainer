@@ -22,7 +22,8 @@ RUN apt-get -y install\
  nano\
  vim\
  dos2unix\
- valgrind
+ valgrind\
+ dot
 
 # install dependencies for shell tests
 RUN apt-get -y install\

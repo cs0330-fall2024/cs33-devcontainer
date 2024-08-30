@@ -31,7 +31,8 @@ RUN apt-get -y install\
  nano\
  vim\
  qemu-user\
- valgrind
+ valgrind\
+ dot
 
 # install dependencies for shell tests
 RUN apt-get -y install\
