@@ -27,7 +27,7 @@ else
 fi
 
 docker ps -a --filter "name=$persistent_name" | grep "$tag" | awk '{print $1}' | xargs -r docker rm
-docker images | grep "$tag" | awk '{print $1":"$2}' | xargs -r docker rmi
+docker images -q --filter "reference=$tag" | xargs -r docker rmi
 
 dockerfile=Dockerfile
 if test "$platform" = "linux/arm64"; then
