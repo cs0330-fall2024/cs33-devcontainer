@@ -34,8 +34,9 @@ RUN apt-get -y install\
 RUN yes | pip install termcolor
 
 # put reformat script in usr/bin
-RUN echo "#!/bin/bash\n\nclang-format -i -style='{ "BasedOnStyle": "google", "IndentWidth": 4, "DerivePointerAlignment": false, "PointerAlignment": "Right" }' *.c *.h" > /usr/bin/cs33_reformat && \
- chmod +rx /usr/bin/cs33_reformat
+COPY .clang-format /usr/bin/.clang-format
+COPY cs33_reformat /usr/bin/cs33_reformat
+RUN chmod +rx /usr/bin/cs33_reformat
 
 # set up default locale
 RUN locale-gen en_US.UTF-8

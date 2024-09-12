@@ -34,4 +34,10 @@ if test "$platform" = "linux/arm64"; then
     dockerfile=Dockerfile.arm64
 fi
 
-exec docker build -t "$tag" -f "$dockerfile" --platform "$platform" .
+cp ../home/.clang-format .
+cp ../home/cs33_reformat .
+
+(exec docker build -t "$tag" -f "$dockerfile" --platform "$platform" .)
+
+rm -f .clang-format cs33_reformat
+
