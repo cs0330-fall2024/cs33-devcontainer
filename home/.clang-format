@@ -1,0 +1,15 @@
+BasedOnStyle: google
+IndentWidth: 4
+DerivePointerAlignment: false
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+PointerAlignment: Right
+
+# Prevent any sorting/rearranging of include statements
+SortIncludes: Never
+IncludeBlocks: Preserve
+IncludeIsMainRegex: '^(?!.*$)' # Never matches, prevents recognition of any file as the main header.
+IncludeCategories:
+  - Regex: '.*'
+    Priority: 1
