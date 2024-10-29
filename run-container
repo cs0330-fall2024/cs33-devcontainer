@@ -80,7 +80,7 @@ if test -z "$fresh"; then
             image="`echo $existing_image | sed 's/^.*,//'`"
             image12="`echo $image | head -c 12`"
             echo "* Using running persistent container $image12, created $created_at" 1>&2
-            exec docker start -ai $image
+            exec docker exec -it$sshenvarg $image /bin/bash
         fi
     fi
     existing_image="`docker ps -f status=running -f ancestor=$tag --no-trunc --format "{{.CreatedAt}},{{.ID}}" | sort -r | head -n 1`"
